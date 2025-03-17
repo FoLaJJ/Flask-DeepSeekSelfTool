@@ -24,8 +24,8 @@ tips：
 
 1. 克隆项目到本地：
 ```bash
-git clone https://github.com/FoLaJJ/DeepSeekSelfTools-flask.git
-cd DeepSeekSelfTools-flask
+git clone https://github.com/FoLaJJ/Flask-DeepSeekSelfTool.git
+cd Flask-DeepSeekSelfTool
 ```
 
 
