@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek 安全分析平台</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{url_for('static',filename='js/index.js')}}"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DeepSeek 安全分析平台</h1>
+            <div class="theme-selector">
+                <label for="theme">主题：</label>
+                <select id="theme">
+                    {% for theme_name in themes %}
+                    <option value="{{ theme_name }}">{{ theme_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="traffic">流量分析</button>
+                <button class="tab-btn" data-tab="js">JS审计</button>
+                <button class="tab-btn" data-tab="process">进程分析</button>
+                <button class="tab-btn" data-tab="http">HTTP转Python</button>
+                <button class="tab-btn" data-tab="text">文本处理</button>
+                <button class="tab-btn" data-tab="regex">正则生成</button>
+                <button class="tab-btn" data-tab="webshell">WebShell检测</button>
+                <button class="tab-btn" data-tab="translate">AI翻译</button>
+                <button class="tab-btn" data-tab="source">源码审计</button>
+                <button class="tab-btn" data-tab="vuln">漏洞分析</button>
+            </div>
+
+            <!-- 流量分析 -->
+            <div class="tab-content active" id="traffic">
+                <div class="split-view">
+                    <div class="left-panel">
+                        <h2>网络流量智能分析系统</h2>
+                        <textarea id="traffic-input" placeholder="粘贴HTTP请求数据..."></textarea>
+                        <button id="analyze-btn">开始智能分析</button>
+                        <div class="result-container">
+                            <h3>AI分析结果:</h3>
+                            <div id="traffic-result"></div>
+                        </div>
+                    </div>
+                    <div class="right-panel">
+                        <h2>AI全智能解码</h2>
+                        <textarea id="decode-input" placeholder="输入需要解码的字符串..."></textarea>
+                        <button id="decode-btn">AI智能解码</button>
+                        <div class="result-container">
+                            <h3>解码结果:</h3>
+                            <div id="decode-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JS审计 -->
+            <div class="tab-content" id="js">
+                <h2>JavaScript代码安全审计</h2>
+                <textarea id="js-input" placeholder="粘贴JavaScript代码..."></textarea>
+                <button id="js-audit-btn">开始安全审计</button>
+                <div class="result-container">
+                    <h3>审计结果:</h3>
+                    <div id="js-result"></div>
+                </div>
+            </div>
+
+            <!-- 进程分析 -->
+            <div class="tab-content" id="process">
+                <h2>进程分析系统</h2>
+                <textarea id="process-input" placeholder="粘贴tasklist或ps aux信息..."></textarea>
+                <button id="process-btn">开始进程分析</button>
+                <div class="result-container">
+                    <h3>分析结果:</h3>
+                    <div id="process-result"></div>
+                </div>
+            </div>
+
+            <!-- HTTP转Python -->
+            <div class="tab-content" id="http">
+                <h2>HTTP转Python代码</h2>
+                <textarea id="http-input" placeholder="粘贴HTTP请求..."></textarea>
+                <button id="convert-btn">开始转换</button>
+                <div class="result-container">
+                    <h3>转换结果:</h3>
+                    <div id="conversion-result"></div>
+                </div>
+            </div>
+
+            <!-- 文本处理 -->
+            <div class="tab-content" id="text">
+                <h2>AI文本格式转换</h2>
+                <div class="split-view">
+                    <div class="left-panel">
+                        <textarea id="text-source" placeholder="源文本..."></textarea>
+                        <textarea id="text-sample" placeholder="样本格式..."></textarea>
+                    </div>
+                    <div class="right-panel">
+                        <button id="text-process-btn">开始转换</button>
+                        <div class="result-container">
+                            <h3>转换结果:</h3>
+                            <div id="text-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 正则生成 -->
+            <div class="tab-content" id="regex">
+                <h2>正则表达式生成</h2>
+                <div class="split-view">
+                    <div class="left-panel">
+                        <textarea id="regex-source" placeholder="源文本..."></textarea>
+                        <textarea id="regex-sample" placeholder="样本格式..."></textarea>
+                    </div>
+                    <div class="right-panel">
+                        <button id="regex-btn">生成正则表达式</button>
+                        <div class="result-container">
+                            <h3>生成结果:</h3>
+                            <div id="regex-result"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WebShell检测 -->
+            <div class="tab-content" id="webshell">
+                <h2>WebShell检测系统</h2>
+                <div class="file-control">
+                    <button id="choose-file">选择单个文件</button>
+                    <button id="choose-dir">选择扫描目录</button>
+                    <span id="scan-path">未选择文件/目录</span>
+                </div>
+                <div class="filter-control">
+                    <label>检测文件类型:</label>
+                    <input type="checkbox" id="check-php" checked> PHP
+                    <input type="checkbox" id="check-jsp"> JSP
+                    <input type="checkbox" id="check-asp"> ASP
+                </div>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <button id="start-scan">开始深度检测</button>
+                <div class="result-container">
+                    <h3>检测结果:</h3>
+                    <div id="webshell-result"></div>
+                </div>
+            </div>
+
+            <!-- AI翻译 -->
+            <div class="tab-content" id="translate">
+                <h2>AI多语言专业翻译</h2>
+                <div class="lang-control">
+                    <select id="source-lang">
+                        <option value="自动检测">自动检测</option>
+                        <option value="中文">中文</option>
+                        <option value="英文">英文</option>
+                        <option value="日文">日文</option>
+                        <option value="韩文">韩文</option>
+                        <option value="德文">德文</option>
+                        <option value="法文">法文</option>
+                    </select>
+                    <select id="target-lang">
+                        <option value="中文">中文</option>
+                        <option value="英文">英文</option>
+                        <option value="日文">日文</option>
+                        <option value="韩文">韩文</option>
+                        <option value="德文">德文</option>
+                        <option value="法文">法文</option>
+                    </select>
+                </div>
+                <div class="split-view">
+                    <div class="left-panel">
+                        <textarea id="trans-input" placeholder="输入待翻译内容..."></textarea>
+                    </div>
+                    <div class="right-panel">
+                        <button id="trans-btn">开始翻译</button>
+                        <div class="result-container">
+                            <h3>译文:</h3>
+                            <div id="trans-output"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 源码审计 -->
+            <div class="tab-content" id="source">
+                <h2>源码安全审计系统</h2>
+                <div class="file-control">
+                    <button id="choose-dir-audit">选择源码目录</button>
+                    <span id="dir-path">未选择目录</span>
+                </div>
+                <div class="filter-control">
+                    <label>文件类型过滤:</label>
+                    <input type="checkbox" id="check-php-audit" checked> PHP
+                    <input type="checkbox" id="check-jsp-audit" checked> JSP
+                    <input type="checkbox" id="check-asp-audit" checked> ASP
+                </div>
+                <div class="progress-bar">
+                    <div class="progress"></div>
+                </div>
+                <button id="start-audit">开始深度审计</button>
+                <div class="result-container">
+                    <h3>审计结果:</h3>
+                    <div id="audit-result"></div>
+                </div>
+            </div>
+
+            <!-- 漏洞分析 -->
+            <div class="tab-content" id="vuln">
+                <h2>漏洞分析系统</h2>
+                <input type="text" id="url-input" placeholder="输入URL...">
+                <input type="text" id="vulnerability-input" placeholder="输入漏洞类型...">
+                <button id="analyze-vuln-btn">开始漏洞分析</button>
+                <div class="result-container">
+                    <h3>分析结果:</h3>
+                    <div id="vuln-result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
