@@ -19,7 +19,7 @@ def chat_completion(prompt, temperature=0.3):
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": temperature
             }
-            response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload, timeout=60)
+            response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload, timeout=100)
         else:  # ollama
             payload = {
                 "model": OLLAMA_MODEL,
