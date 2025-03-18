@@ -4,17 +4,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const calculateTokenBtn = document.getElementById('calculate-token-btn');
     const tokenResult = document.getElementById('token-result');
 
-    // DeepSeek的token计算方法
+    // 根据DeepSeek官网规则优化的计算方法
     function calculateDeepSeekTokens(text) {
-        // 使用tiktoken的编码方式
-        const tokens = text.split(/\s+/).length;
-        // 中文字符按2个token计算
+        // 统计中文字符（每个0.6 token）
         const chineseChars = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
-        // 标点符号按0.5个token计算
-        const punctuation = (text.match(/[^\w\s\u4e00-\u9fa5]/g) || []).length;
-        
-        const totalTokens = tokens + chineseChars + (punctuation * 0.5);
-        return Math.ceil(totalTokens);
+        // 统计其他字符（包括英文/数字/符号/空格，每个0.3 token）
+        const otherChars = text.replace(/[\u4e00-\u9fa5]/g, '').length;
+
+        // 计算总token并向上取整
+        return Math.ceil(chineseChars * 0.6 + otherChars * 0.3);
     }
 
     calculateTokenBtn.addEventListener('click', function() {
@@ -26,9 +24,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const tokenCount = calculateDeepSeekTokens(text);
         tokenResult.innerHTML = `
-            <p>文本长度: ${text.length} 字符</p>
-            <p>预估Token数量: ${tokenCount}</p>
-            <p>注意：这是一个估算值，实际token数量可能会有所不同</p>
+            <p class="token-highlight">预估Token数量: ${tokenCount}</p> 
+            <p class="token-highlight">文本长度: ${text.length} 字符</p>
+            <p class="tip">换算规则: (官方模型估计值,向上取整)</p>
+            <p class="tip">中文≈0.6 Token/字</p>
+            <p class="tip">英文/数字/符号≈0.3 Token/字</p>
+            <p class="tip">tips：这是一个估算值，实际token数量可能会有所不同</p>
         `;
     });
-}); 
+});

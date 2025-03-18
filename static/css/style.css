@@ -253,3 +253,13 @@ button:hover {
 .tab-content.active {
     animation: fadeIn 0.3s ease-out;
 }
+
+.token-highlight {
+    color: #e67e22;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin: 10px 0;
+    padding: 5px;
+    border-bottom: 2px solid #f1c40f;
+    animation: pulse 1.5s infinite;
+}

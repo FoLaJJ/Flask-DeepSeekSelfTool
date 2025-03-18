@@ -56,6 +56,12 @@ http://localhost:5000
 ```
 
 ## 重构页面
+计算token，其中参考了官方模型的大致计算方法
+![](MD-PNG/官方模型token用量计算.png)
+
+具体效果
+![](MD-PNG/token计算演示.png)
+
 浅色主题
 ![](MD-PNG/浅色主题.png)
 
