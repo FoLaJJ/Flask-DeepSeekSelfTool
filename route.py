@@ -2,7 +2,12 @@ from flask import Blueprint, request, jsonify
 import requests
 import json
 import re
-from config import API_TYPE, DEEPSEEK_API_KEY, DEEPSEEK_API_URL, DEEPSEEK_MODEL, OLLAMA_API_URL, OLLAMA_MODEL
+from config import (
+    API_TYPE, DEEPSEEK_API_KEY, DEEPSEEK_API_URL, DEEPSEEK_MODEL,
+    OLLAMA_API_URL, OLLAMA_MODEL,
+    OPENROUTER_API_KEY, OPENROUTER_MODEL,
+    OPENROUTER_API_URL
+)
 
 api = Blueprint('api', __name__)
 
@@ -19,7 +24,44 @@ def chat_completion(prompt, temperature=0.3):
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": temperature
             }
-            response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload, timeout=100)
+            response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload, timeout=120)
+            response.raise_for_status()
+            return response.json()["choices"][0]["message"]["content"]
+        elif API_TYPE == "openrouter":
+            headers = {
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json",
+            }
+            payload = {
+                "model": OPENROUTER_MODEL,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": temperature
+            }
+            response = requests.post(OPENROUTER_API_URL,
+                                     headers=headers,
+                                     json=payload,
+                                     timeout=120)
+
+            # 检查响应状态码
+            if response.status_code != 200:
+                error_msg = f"OpenRouter API 返回错误状态码: {response.status_code}"
+                try:
+                    error_detail = response.json()
+                    error_msg += f"\n错误详情: {error_detail}"
+                except:
+                    error_msg += f"\n响应内容: {response.text}"
+                raise Exception(error_msg)
+
+            # 尝试解析 JSON 响应
+            try:
+                response_data = response.json()
+                if "choices" not in response_data or not response_data["choices"]:
+                    raise Exception("OpenRouter API 响应格式错误：缺少 choices 字段")
+                return response_data["choices"][0]["message"]["content"]
+            except json.JSONDecodeError as e:
+                raise Exception(f"OpenRouter API 响应不是有效的 JSON 格式: {response.text}")
+            except KeyError as e:
+                raise Exception(f"OpenRouter API 响应格式错误: {str(e)}")
         else:  # ollama
             payload = {
                 "model": OLLAMA_MODEL,
@@ -27,11 +69,7 @@ def chat_completion(prompt, temperature=0.3):
                 "stream": False
             }
             response = requests.post(OLLAMA_API_URL, json=payload)
-
-        response.raise_for_status()
-        if API_TYPE == "deepseek":
-            return response.json()["choices"][0]["message"]["content"]
-        else:
+            response.raise_for_status()
             content = response.json()["message"]["content"]
             content = re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL)
             return content.strip()
